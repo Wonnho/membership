@@ -1,10 +1,11 @@
 package com.membership.member.dto;
 
-import com.membership.member.enitty.Member;
+import com.membership.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,0 +1,22 @@
+{{>/layouts/header}}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Email</th>
+      <th scope="col">Password</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">{{member.id}}</th>
+      <td>{{member.email}}</td>
+    </tr>
+  </tbody>
+</table>
+  <a href="/members/{{member.id}}>수정</a>
+
+<a href="/members">MemberList</a>
+
+{{>/layouts/footer}}

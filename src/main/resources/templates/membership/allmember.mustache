@@ -1,0 +1,25 @@
+{{>/layouts/header}}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Email</th>
+      <th scope="col">Password</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {{#memberList}}
+    <tr>
+      <th scope="row">{{id}}</th>
+      <td colspan="2">{<a href="/members/{{id}}>{email}}</a></td>
+      <td colspan="2">{{password}}</td>
+
+    </tr>
+    {{/memberList}}
+
+  </tbody>
+</table>
+
+{{>/layouts/footer}}
