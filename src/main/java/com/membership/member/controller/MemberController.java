@@ -66,12 +66,20 @@ public class MemberController {
 
     }
 
-//    @GetMapping("/members/update/{id}")
-//    public  String updatemember(@PathVariable("id") Long id) {
-//         Member updateid=memberRepository.findById(id).orElse(null);
-//       //   Member  save=updateid.getId();
-//         return "";
-//    }
+    @GetMapping("/members/update/{id}")
+    public  String updateMember(@PathVariable("id") Long id,Model model) {
+         Member updateId=memberRepository.findById(id).orElseThrow();
+          model.addAttribute("member",updateId);
+         return "membership/update";
+    }
+
+    @PostMapping("/members/update/{id}")
+    public String updatedMember(@PathVariable("id") Long id,MemberForm form) {
+        Member member=memberRepository.findById(id).orElseThrow();
+            member.update(form.getEmail(),form.getPassword());
+                 memberRepository.save(member);
+        return "redirect:/members/"+id;
+    }
 
 
 
