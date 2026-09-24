@@ -82,5 +82,11 @@ public class MemberController {
     }
 
 
+      @PostMapping("/members/delete/{id}")
+      public  String delete(@PathVariable("id") Long id) {
+       memberRepository.deleteById(id);
+
+         return "redirect:/members";
+      }
 
 }
