@@ -2,19 +2,19 @@ package com.membership.member.controller;
 
 import com.membership.member.entity.Coffee;
 import com.membership.member.repository.CoffeeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Slf4j
 public class CoffeeApiController {
 
     @Autowired
@@ -36,6 +36,29 @@ public class CoffeeApiController {
         return coffee !=null?
               ResponseEntity.status(HttpStatus.OK).body(coffee):
               ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PostMapping("/api/coffee")
+    public ResponseEntity<Coffee> createCoffee(
+            @RequestBody Coffee coffee) {
+
+        log.info(
+                "Coffee creation requested: name={}, price={}",
+                coffee.getCoffee(),
+                coffee.getPrice()
+        );
+
+        Coffee savedCoffee = coffeeRepository.save(coffee);
+
+        log.info(
+                "Coffee created successfully: id={}, name={}",
+                savedCoffee.getId(),
+                savedCoffee.getCoffee()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedCoffee);
     }
 
 }
