@@ -83,4 +83,10 @@ public class CoffeeApiController {
         return coffeeRepository.save(coffeeByid);
     }
 
+    @DeleteMapping("/api/coffee/{id}")
+    public void remove(@PathVariable("id") Long id) {
+      Coffee  deleteId=coffeeRepository.findById(id).orElseThrow();
+         coffeeRepository.delete(deleteId);
+    }
+
 }
