@@ -18,5 +18,5 @@ public class Coffee {
 
     private String coffee;
 
-    private int price;
+    private Integer price;
 }
