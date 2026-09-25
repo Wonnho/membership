@@ -1,9 +1,13 @@
 package com.membership.member.dto;
 
-public class coffeeDto {
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class CoffeeDto {
 
     private String coffee;
-
-    private int price;
+    private Integer price;
 
 }

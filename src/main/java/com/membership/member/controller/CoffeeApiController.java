@@ -1,5 +1,6 @@
 package com.membership.member.controller;
 
+import com.membership.member.dto.CoffeeDto;
 import com.membership.member.entity.Coffee;
 import com.membership.member.repository.CoffeeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -62,21 +63,21 @@ public class CoffeeApiController {
     }
 
     @PatchMapping("/api/coffee/{id}")
-    public Coffee patch(@PathVariable("id") Long id,@RequestBody Coffee coffee) {
+    public Coffee patch(@PathVariable("id") Long id,@RequestBody CoffeeDto coffeeDto) {
           Coffee  coffeeByid=coffeeRepository.findById(id)
                   .orElseThrow(()-> new IllegalArgumentException(
 
                   ));
 
-          if(coffee.getCoffee() !=null) {
-            coffeeByid.setCoffee(coffee.getCoffee());
+          if(coffeeDto.getCoffee() !=null) {
+            coffeeByid.setCoffee(coffeeDto.getCoffee());
             // with Coffee DTO having Setter. set coffee type from one requested by client
               // recall  price or coffee type changed by client on Talend API
               //so coffee object inside patch() should  be altered by client
            }
 
-          if(coffee.getPrice() !=null ) {
-              coffeeByid.setPrice(coffee.getPrice());
+          if(coffeeDto.getPrice() !=null ) {
+              coffeeByid.setPrice(coffeeDto.getPrice());
           }
 
         return coffeeRepository.save(coffeeByid);
