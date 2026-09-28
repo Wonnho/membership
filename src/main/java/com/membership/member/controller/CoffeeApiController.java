@@ -1,5 +1,6 @@
 package com.membership.member.controller;
 
+import com.membership.member.Service.CoffeeService;
 import com.membership.member.dto.CoffeeDto;
 import com.membership.member.entity.Coffee;
 import com.membership.member.repository.CoffeeRepository;
@@ -19,24 +20,35 @@ import java.util.Optional;
 public class CoffeeApiController {
 
     @Autowired
+    private CoffeeService coffeeService;
+
+    @Autowired
     private CoffeeRepository coffeeRepository;
 
     @GetMapping("/api/coffee")
-    public List<Coffee> retrieveCoffee() {
-        // retrieve all coffee data
-    ArrayList<Coffee> coffee= (ArrayList<Coffee>) coffeeRepository.findAll();
+    public ResponseEntity<List<Coffee>> retrieveCoffee() {
+        log.info("GET /api/coffee requested");
 
-        return coffee;
+        // retrieve all coffee data
+          List<Coffee>   coffees=coffeeService.retrieveAll();
+
+        log.info("Retrieved {} coffee records", coffees.size());
+        log.debug("Retrieved coffees: {}", coffees);
+
+        return ResponseEntity.status(HttpStatus.OK).body(coffees);
     }
 
     @GetMapping("/api/coffee/{id}")
     public ResponseEntity<Coffee> retrieveCoffeeById(@PathVariable("id") Long id) {
-        // retrieve a coffee
-        Coffee coffee =coffeeRepository.findById(id).orElse(null);
+        log.info("GET /api/coffee/{} requested", id);
 
-        return coffee !=null?
-              ResponseEntity.status(HttpStatus.OK).body(coffee):
-              ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        // retrieve a particular coffee
+        Optional<Coffee> coffee =coffeeService.retrieveCoffeeById(id);
+
+        return coffee
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @PostMapping("/api/coffee")
@@ -49,7 +61,7 @@ public class CoffeeApiController {
                 coffee.getPrice()
         );
 
-        Coffee savedCoffee = coffeeRepository.save(coffee);
+        Coffee savedCoffee = coffeeService.createCoffee(coffee);
 
         log.info(
                 "Coffee created successfully: id={}, name={}",
@@ -64,7 +76,8 @@ public class CoffeeApiController {
 
     @PatchMapping("/api/coffee/{id}")
     public Coffee patch(@PathVariable("id") Long id,@RequestBody CoffeeDto coffeeDto) {
-          Coffee  coffeeByid=coffeeRepository.findById(id)
+
+        Coffee  coffeeByid=coffeeRepository.findById(id)
                   .orElseThrow(()-> new IllegalArgumentException(
 
                   ));
