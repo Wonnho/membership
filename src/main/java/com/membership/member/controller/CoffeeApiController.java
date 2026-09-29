@@ -77,29 +77,15 @@ public class CoffeeApiController {
     @PatchMapping("/api/coffee/{id}")
     public Coffee patch(@PathVariable("id") Long id,@RequestBody CoffeeDto coffeeDto) {
 
-        Coffee  coffeeByid=coffeeRepository.findById(id)
-                  .orElseThrow(()-> new IllegalArgumentException(
 
-                  ));
-
-          if(coffeeDto.getCoffee() !=null) {
-            coffeeByid.setCoffee(coffeeDto.getCoffee());
-            // with Coffee DTO having Setter. set coffee type from one requested by client
-              // recall  price or coffee type changed by client on Talend API
-              //so coffee object inside patch() should  be altered by client
-           }
-
-          if(coffeeDto.getPrice() !=null ) {
-              coffeeByid.setPrice(coffeeDto.getPrice());
-          }
-
-        return coffeeRepository.save(coffeeByid);
+        return coffeeService.patchCoffee(id,coffeeDto);
     }
 
     @DeleteMapping("/api/coffee/{id}")
     public void remove(@PathVariable("id") Long id) {
-      Coffee  deleteId=coffeeRepository.findById(id).orElseThrow();
-         coffeeRepository.delete(deleteId);
+
+
+        coffeeService.deleteCoffee(id);
     }
 
 }
