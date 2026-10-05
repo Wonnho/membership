@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-mappings
+        xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            https://jakarta.ee/xml/ns/persistence/orm
+            https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd"
+        version="3.2">
+
+    <named-native-query
+            name="Review.findByUsername"
+            result-class="com.membership.member.entity.Review">
+        <query><![CDATA[
+        SELECT r.*
+        FROM review r
+        JOIN member m ON m.id = r.member_id
+        WHERE LOWER(
+            SUBSTRING(m.email, 1, LOCATE('@', m.email) - 1)
+        ) = LOWER(:username)
+        ORDER BY r.id
+    ]]></query>
+    </named-native-query>
+
+</entity-mappings>

@@ -21,4 +21,16 @@ public class Coffee {
     private Integer price;
 
     private String image;
+
+    public Coffee() {
+        // Required by JPA and used by CoffeeApiController
+    }
+
+    public Coffee(Long id, String coffee, int price, String image) {
+        this.id = id;
+        this.coffee = coffee;
+        this.price = price;
+        this.image = image;
+    }
+
 }

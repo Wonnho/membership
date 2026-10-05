@@ -78,4 +78,17 @@ public class Member {
         this.resetExpiresAt=null;
     }
 
+    @Transient
+    public String getUsername() {
+        if (email == null) {
+            return null;
+        }
+
+        int atIndex = email.indexOf('@');
+
+        return atIndex > 0
+                ? email.substring(0, atIndex)
+                : email;
+    }
+
 }

@@ -7,7 +7,7 @@ INSERT INTO member (
     verification_sends,
     role
 ) VALUES (
-    'member1@example.com',
+    'Grok@gmail.com',
     NULL,
     TRUE,
     0,
@@ -23,7 +23,7 @@ INSERT INTO member (
     verification_sends,
     role
 ) VALUES (
-    'member2@example.com',
+    'Charles@spaceX.com',
     NULL,
     TRUE,
     0,
@@ -39,7 +39,7 @@ INSERT INTO member (
     verification_sends,
     role
 ) VALUES (
-    'member3@example.com',
+    'Henry@nasa.com',
     NULL,
     TRUE,
     0,
