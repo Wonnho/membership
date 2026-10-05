@@ -1,0 +1,49 @@
+{{>layouts/header}}
+<main class="container py-5">
+    <div class="catalog-heading">
+        <div><p class="text-muted mb-2">Fresh coffee, your choice</p><h1>Coffee List</h1></div>
+        {{#isAdmin}}<a href="/coffeeboard/register" class="coffee-action coffee-action--modify">Register coffee</a>{{/isAdmin}}
+        {{#loggedIn}}<a href="/basket" class="coffee-action coffee-action--neutral">View basket</a>{{/loggedIn}}
+    </div>
+    {{#searchActive}}<p role="status">{{resultCount}} results for “{{searchQuery}}”. <a href="/coffee/read">Clear search</a></p>{{/searchActive}}
+    <div class="coffee-grid">
+        {{#coffees}}
+        <article class="product-card">
+            <a class="product-photo" href="/coffee/read/{{id}}">
+                {{#image}}<img src="{{image}}" alt="{{coffee}}" loading="lazy">{{/image}}
+                {{^image}}<span>No image available</span>{{/image}}
+            </a>
+            <div class="product-content">
+                <h2><a href="/coffee/read/{{id}}">{{coffee}}</a></h2>
+                <p class="product-price">₩{{#price}}{{.}}{{/price}}{{^price}}0{{/price}}</p>
+                {{#loggedIn}}
+                <form action="/basket/add" method="post" class="basket-add">
+                    {{>layouts/csrf}}
+                    <input type="hidden" name="id" value="{{id}}">
+                    <label for="qty-{{id}}" class="visually-hidden">Quantity of {{coffee}}</label>
+                    <input id="qty-{{id}}" name="quantity" type="number" min="1" max="99" value="1" required>
+                    <button class="coffee-action coffee-action--modify" type="submit">Add to basket</button>
+                </form>
+                {{/loggedIn}}
+                {{^loggedIn}}<a href="/login" class="coffee-action coffee-action--neutral">Login to order</a>{{/loggedIn}}
+                {{#isAdmin}}
+                <div class="coffee-actions product-admin">
+                    <a href="/coffeeboard/modify/{{id}}" class="coffee-action coffee-action--modify">Modify</a>
+                    <form action="/coffeeboard/remove/{{id}}" method="post" onsubmit="return confirm('Remove this coffee?');">
+                        {{>layouts/csrf}}
+                        <button class="coffee-action coffee-action--remove" type="submit">Remove</button>
+                    </form>
+                </div>
+                {{/isAdmin}}
+            </div>
+        </article>
+        {{/coffees}}
+    </div>
+    {{^coffees}}<p class="empty-state">{{#searchActive}}No coffees match your search. Try another name.{{/searchActive}}{{^searchActive}}No coffee is currently available.{{/searchActive}}</p>{{/coffees}}
+    <nav class="catalog-pages" aria-label="Coffee list pages">
+        {{#hasPrevious}}<a class="coffee-action coffee-action--neutral" href="{{previousUrl}}">Previous</a>{{/hasPrevious}}
+        <span>Page {{pageNumber}} of {{pageCount}}</span>
+        {{#hasNext}}<a class="coffee-action coffee-action--neutral" href="{{nextUrl}}">Next</a>{{/hasNext}}
+    </nav>
+</main>
+{{>layouts/footer}}

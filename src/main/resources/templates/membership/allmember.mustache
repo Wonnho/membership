@@ -1,25 +1,17 @@
-{{>/layouts/header}}
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Email</th>
-      <th scope="col">Password</th>
-    </tr>
-  </thead>
-  <tbody>
-
-  {{#memberList}}
-    <tr>
-      <th scope="row">{{id}}</th>
-      <td><a href="/members/{{id}}">{{email}}</a></td>
-      <td>{{password}}</td>
-
-    </tr>
-    {{/memberList}}
-
-  </tbody>
-</table>
-
-{{>/layouts/footer}}
+{{>layouts/header}}
+<main class="container py-5">
+    <section class="member-detail">
+        <div class="member-detail-heading"><h1 class="h2">Members</h1><p class="text-muted mb-0">Administrator access</p></div>
+        <div class="table-responsive p-4">
+            <table class="table align-middle">
+                <thead><tr><th>ID</th><th>Email</th><th>Role</th><th>Account</th></tr></thead>
+                <tbody>
+                    {{#memberList}}<tr><td>{{id}}</td><td>{{email}}</td><td>{{role}}</td>
+                    <td><a href="/members/{{id}}" class="coffee-action coffee-action--neutral">View</a></td></tr>{{/memberList}}
+                </tbody>
+            </table>
+            <p class="text-muted">Passwords cannot be viewed. Open an account to create a single-use password reset link.</p>
+        </div>
+    </section>
+</main>
+{{>layouts/footer}}

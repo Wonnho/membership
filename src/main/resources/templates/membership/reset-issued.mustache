@@ -1,0 +1,14 @@
+{{>layouts/header}}
+<meta name="referrer" content="no-referrer">
+<main class="container py-5"><section class="member-detail">
+    <div class="member-detail-heading"><h1 class="h3">Password reset link</h1><p>For {{recipient}}</p></div>
+    <div class="p-4">
+        <p>This link expires in 30 minutes and works once. Creating another link replaces it.</p>
+        <label for="reset-link" class="form-label">Share privately with this member</label>
+        <input id="reset-link" class="form-control mb-3" value="{{resetPath}}" readonly>
+        <p class="text-muted">Email and SMS delivery are not connected. No message has been sent.</p>
+        <a href="/members" class="coffee-action coffee-action--neutral">Back to members</a>
+    </div>
+</section></main>
+<script src="/js/reset-link.js" defer></script>
+{{>layouts/footer}}

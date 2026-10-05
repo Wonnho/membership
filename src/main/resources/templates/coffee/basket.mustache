@@ -1,0 +1,40 @@
+{{>layouts/header}}
+<main class="container py-5">
+    <div class="catalog-heading"><h1>Your basket</h1><a href="/coffee/read" class="coffee-action coffee-action--neutral">Continue shopping</a></div>
+    {{#removedItems}}<p class="alert alert-info">Unavailable coffees were removed from your basket.</p>{{/removedItems}}
+    {{#empty}}<p class="empty-state">Your basket is empty. Choose coffees from the Coffee List.</p>{{/empty}}
+    {{^empty}}
+    {{#alreadyOrdered}}
+    <p class="alert alert-success">These items are already ordered. Your selection is kept here.
+        <a href="{{receiptUrl}}">View order</a>. Change the basket to prepare a new order containing the displayed items.</p>
+    {{/alreadyOrdered}}
+    <div class="basket-lines">
+        {{#items}}
+        <article class="basket-line">
+            <div><h2 class="h5">{{coffeeName}}</h2><p>₩{{unitPrice}} each · Subtotal ₩{{subtotal}}</p></div>
+            <form action="/basket/update" method="post" class="basket-add">
+                {{>layouts/csrf}}<input name="id" value="{{coffeeId}}" type="hidden">
+                <label for="basket-qty-{{coffeeId}}">Qty</label>
+                <input id="basket-qty-{{coffeeId}}" type="number" name="quantity" value="{{quantity}}" min="1" max="99" required>
+                <button class="coffee-action coffee-action--neutral">Update</button>
+            </form>
+            <form action="/basket/remove" method="post">{{>layouts/csrf}}<input name="id" value="{{coffeeId}}" type="hidden">
+                <button class="coffee-action coffee-action--remove">Remove</button>
+            </form>
+        </article>
+        {{/items}}
+    </div>
+    <div class="basket-summary">
+        <p class="h4">Total ₩{{total}}</p>
+        <p class="text-muted">Your order uses current coffee prices. Payment is not collected here.</p>
+        <div class="coffee-actions">
+            {{^alreadyOrdered}}<form action="/basket/checkout" method="post">
+                {{>layouts/csrf}}<input type="hidden" name="checkoutKey" value="{{checkoutKey}}">
+                <button class="coffee-action coffee-action--modify">Place order</button>
+            </form>{{/alreadyOrdered}}
+            <form action="/basket/clear" method="post">{{>layouts/csrf}}<button class="coffee-action coffee-action--neutral">Clear basket</button></form>
+        </div>
+    </div>
+    {{/empty}}
+</main>
+{{>layouts/footer}}

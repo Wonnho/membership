@@ -1,0 +1,37 @@
+{{>/layouts/header}}
+
+<main class="container py-5">
+    <div class="card">
+        <div class="card-header"><h1 class="h4 mb-0">Coffee details</h1></div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    {{#coffee.image}}
+                    <img src="{{coffee.image}}" alt="{{coffee.coffee}}"
+                         class="img-fluid rounded" style="max-height: 400px; object-fit: contain;">
+                    {{/coffee.image}}
+                    {{^coffee.image}}
+                    <p class="text-muted">No image available.</p>
+                    {{/coffee.image}}
+                </div>
+                <div class="col-md-7">
+                    <div class="mb-3">
+                        <label for="coffee-id" class="form-label">ID</label>
+                        <input id="coffee-id" class="form-control" value="{{coffee.id}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coffee-name" class="form-label">Coffee</label>
+                        <input id="coffee-name" class="form-control" value="{{coffee.coffee}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coffee-price" class="form-label">Price (KRW)</label>
+                        <input id="coffee-price" class="form-control" value="{{#coffee.price}}{{.}}{{/coffee.price}}" readonly>
+                    </div>
+                    <a href="/coffee/read" class="btn btn-primary">Back to coffee list</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{>/layouts/footer}}

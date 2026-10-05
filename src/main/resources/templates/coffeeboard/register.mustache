@@ -1,0 +1,30 @@
+{{>/layouts/header}}
+
+<main class="container py-4">
+    <div class="card">
+        <div class="card-header"><h1 class="h3 mb-0">Beverage Registration</h1></div>
+        <div class="card-body">
+            <form action="/coffeeboard/register" method="post">
+                {{>layouts/csrf}}
+                <div class="mb-3">
+                    <label for="coffee-name" class="form-label">Beverage name</label>
+                    <input id="coffee-name" name="coffee" type="text" class="form-control"
+                           placeholder="Coffee name" required maxlength="255">
+                </div>
+                <div class="mb-3">
+                    <label for="coffee-price" class="form-label">Price (KRW)</label>
+                    <input id="coffee-price" name="price" type="number" class="form-control"
+                           placeholder="4500" required min="0" max="2147483647" step="1">
+                </div>
+                {{>coffeeboard/upload}}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <a href="/coffeeboard/read" class="btn btn-outline-secondary">Beverage List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+{{>/layouts/footer}}

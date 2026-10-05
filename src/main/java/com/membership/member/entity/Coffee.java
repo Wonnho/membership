@@ -19,4 +19,6 @@ public class Coffee {
     private String coffee;
 
     private Integer price;
+
+    private String image;
 }

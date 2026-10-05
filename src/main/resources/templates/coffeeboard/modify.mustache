@@ -1,0 +1,25 @@
+{{>/layouts/header}}
+<main class="container py-4">
+    <div class="card">
+        <div class="card-header"><h1 class="h3 mb-0">Modify Coffee</h1></div>
+        <div class="card-body">
+            <form action="/coffeeboard/modify/{{coffee.id}}" method="post">
+                {{>layouts/csrf}}
+                <div class="mb-3">
+                    <label for="coffee-name" class="form-label">Beverage name</label>
+                    <input id="coffee-name" name="coffee" class="form-control"
+                           value="{{coffee.coffee}}" required maxlength="255">
+                </div>
+                <div class="mb-3">
+                    <label for="coffee-price" class="form-label">Price (KRW)</label>
+                    <input id="coffee-price" name="price" type="number" class="form-control"
+                           value="{{#coffee.price}}{{.}}{{/coffee.price}}" required min="0" max="2147483647" step="1">
+                </div>
+                {{>coffeeboard/upload}}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                <a href="/coffee/read" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</main>
+{{>/layouts/footer}}

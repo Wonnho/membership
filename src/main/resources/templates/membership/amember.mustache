@@ -1,25 +1,35 @@
-{{>/layouts/header}}
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Email</th>
-      <th scope="col">Password</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">{{member.id}}</th>
-      <td>{{member.email}}</td>
-    </tr>
-  </tbody>
-</table>
- <a href="/members/update/{{member.id}}" class="btn btn-info">수정</a>
-<a href="/members">MemberList</a>
-<form action="/members/delete/{{member.id}}"
-      method="post"
-      class="d-inline">
-    <button type="submit" class="btn btn-danger">삭제</button>
-</form>
-{{>/layouts/footer}}
+{{>layouts/header}}
+<main class="container py-5">
+    <section class="member-detail">
+        <div class="member-detail-heading"><p class="text-muted">Membership</p><h1 class="h3">Member details</h1></div>
+        <dl class="member-detail-fields">
+            <div><dt>Member ID</dt><dd>{{member.id}}</dd></div>
+            <div><dt>Email address</dt><dd>{{member.email}}</dd></div>
+            {{#isAdmin}}<div><dt>Role</dt><dd>{{member.role}}</dd></div>{{/isAdmin}}
+        </dl>
+        <div class="coffee-actions member-detail-actions">
+            {{#canEdit}}<a href="/members/update/{{member.id}}" class="coffee-action coffee-action--modify">Modify</a>{{/canEdit}}
+            {{#canWithdraw}}
+            <form action="/account/withdraw" method="post" onsubmit="return confirm('Permanently quit membership and delete your account? You will not be able to log in again unless you sign up anew.');">
+                {{>layouts/csrf}}
+                <input type="hidden" name="confirmClosure" value="true">
+                <button type="submit" class="coffee-action coffee-action--remove">Sign out of membership</button>
+            </form>
+            {{/canWithdraw}}
+            {{#isAdmin}}<a href="/members" class="coffee-action coffee-action--neutral">Member List</a>{{/isAdmin}}
+            {{#canReset}}
+            <form action="/members/{{member.id}}/reset" method="post">
+                {{>layouts/csrf}}
+                <button class="coffee-action coffee-action--modify" type="submit">Create password reset link</button>
+            </form>
+            {{/canReset}}
+            {{#canDelete}}
+            <form action="/members/delete/{{member.id}}" method="post" onsubmit="return confirm('Delete this member?');">
+                {{>layouts/csrf}}
+                <button type="submit" class="coffee-action coffee-action--remove">Delete</button>
+            </form>
+            {{/canDelete}}
+        </div>
+    </section>
+</main>
+{{>layouts/footer}}

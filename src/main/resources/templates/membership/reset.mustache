@@ -1,0 +1,20 @@
+{{>layouts/header}}
+<meta name="referrer" content="no-referrer">
+<main class="container py-5"><section class="member-detail auth-card">
+    <div class="member-detail-heading"><h1 class="h3">Choose a new password</h1></div>
+    <div class="p-4">
+        {{#formError}}<p class="alert alert-danger" role="alert">{{formError}}</p>{{/formError}}
+        {{#validLink}}
+        <form action="/password/reset" method="post">
+            {{>layouts/csrf}}<input type="hidden" name="token" value="{{token}}">
+            <label for="new-password" class="form-label">New password</label>
+            <input id="new-password" name="password" type="password" class="form-control mb-3" autocomplete="new-password" minlength="8" required>
+            <label for="confirm-password" class="form-label">Confirm password</label>
+            <input id="confirm-password" name="confirmation" type="password" class="form-control mb-3" autocomplete="new-password" minlength="8" required>
+            <button class="coffee-action coffee-action--modify" type="submit">Save password</button>
+        </form>
+        {{/validLink}}
+        {{^validLink}}<p>This link has expired or has already been used. Ask the administrator for a new link.</p>{{/validLink}}
+    </div>
+</section></main>
+{{>layouts/footer}}

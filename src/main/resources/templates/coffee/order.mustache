@@ -1,0 +1,12 @@
+{{>layouts/header}}
+<main class="container py-5"><section class="member-detail">
+    <div class="member-detail-heading"><h1 class="h3">Order #{{order.id}} received</h1><p class="text-muted">Thank you, {{username}}. No payment has been taken.</p></div>
+    <div class="p-4">
+        {{#order.items}}<div class="basket-line"><span>{{coffeeName}} × {{quantity}}</span><strong>₩{{subtotal}}</strong></div>{{/order.items}}
+        <p class="h4 mt-4">Total ₩{{order.total}}</p>
+        <p class="text-muted">Your selection remains in your basket and is marked as already ordered.</p>
+        <a href="/coffee/read" class="coffee-action coffee-action--modify">Continue shopping</a>
+        <a href="/basket" class="coffee-action coffee-action--neutral">View basket</a>
+    </div>
+</section></main>
+{{>layouts/footer}}

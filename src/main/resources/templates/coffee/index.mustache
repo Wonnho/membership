@@ -1,0 +1,39 @@
+{{>/layouts/header}}
+
+<main class="container py-5">
+    <header class="coffee-home-heading">
+        <div class="coffee-wordmark" aria-label="Mustache Coffee">
+            <img src="/images/coffee-mark.svg" alt="" width="88" height="88">
+            <div><span class="wordmark-name">Mustache</span><span class="wordmark-coffee">COFFEE</span></div>
+        </div>
+        <h1>Alive with a sip <em>of coffee.</em></h1>
+        <p>Fresh coffee, simple choices.</p>
+    </header>
+    <section id="coffee-carousel" class="coffee-carousel" aria-label="Coffee collection" aria-roledescription="carousel">
+        <div class="coffee-viewport">
+            <div class="coffee-track">
+                {{#coffees}}
+                <article class="coffee-slide" aria-label="{{coffee}}" aria-roledescription="slide">
+                    <a href="/coffee/read/{{id}}" aria-label="Read about {{coffee}}">
+                        {{#image}}<img src="{{image}}" alt="{{coffee}}">{{/image}}
+                        {{^image}}<div class="h-100 bg-light"></div>{{/image}}
+                    </a>
+                    <div class="coffee-slide-caption">
+                        <h2>{{coffee}}</h2>
+                        <p>{{#price}}₩{{.}}{{/price}}</p>
+                    </div>
+                </article>
+                {{/coffees}}
+            </div>
+        </div>
+        <div class="coffee-carousel-controls" hidden>
+            <button type="button" data-carousel-prev aria-label="Previous coffee">↑ Previous</button>
+            <span class="coffee-carousel-count"></span>
+            <button type="button" data-carousel-next aria-label="Next coffee">Next ↓</button>
+            <button type="button" data-carousel-toggle>Pause</button>
+        </div>
+        {{^coffees}}<p class="alert alert-info">No coffee is currently available.</p>{{/coffees}}
+    </section>
+</main>
+<script src="/js/coffee-carousel.js" defer></script>
+{{>/layouts/footer}}

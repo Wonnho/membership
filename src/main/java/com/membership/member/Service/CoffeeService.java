@@ -18,6 +18,11 @@ public class CoffeeService {
     @Autowired
     private CoffeeRepository coffeeRepository;
 
+    public List<Coffee> search(String query) {
+        return query == null || query.isBlank() ? retrieveAll()
+                : coffeeRepository.findByCoffeeContainingIgnoreCaseOrderByIdAsc(query.trim());
+    }
+
     public List<Coffee> retrieveAll() {
 
        List<Coffee> coffees=(ArrayList<Coffee>) coffeeRepository.findAll();
@@ -58,8 +63,18 @@ public class CoffeeService {
 
     }
 
+    public Coffee updateCoffee(Long id, String name, Integer price, String image) {
+        Coffee coffee = coffeeRepository.findById(id).orElseThrow(() ->
+                new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
+        coffee.setCoffee(name);
+        coffee.setPrice(price);
+        coffee.setImage(image);
+        return coffeeRepository.save(coffee);
+    }
+
     public void deleteCoffee(Long id) {
-          Coffee  deleteId=coffeeRepository.findById(id).orElseThrow();
+          Coffee  deleteId=coffeeRepository.findById(id).orElseThrow(() ->
+                  new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
            coffeeRepository.delete(deleteId);
 
     }

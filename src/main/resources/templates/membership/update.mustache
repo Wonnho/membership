@@ -3,6 +3,8 @@
 <form class="container mt-5"
       action="/members/update/{{member.id}}"
       method="post">
+    {{>layouts/csrf}}
+    {{#formError}}<div class="alert alert-danger" role="alert">{{formError}}</div>{{/formError}}
 
     <h2>회원정보 수정</h2>
 
@@ -20,7 +22,8 @@
         <input type="password"
                class="form-control"
                name="password"
-               required>
+               autocomplete="new-password">
+        <p class="form-text">Leave blank to keep your password. Changing your email requires a code sent to the new address before you can log in again.</p>
     </div>
 
     <button type="submit" class="btn btn-primary">수정 완료</button>

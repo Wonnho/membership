@@ -1,0 +1,43 @@
+{{>layouts/header}}
+{{#loggedOut}}
+<main class="container py-5" id="goodbye-screen">
+    <section class="member-detail auth-card goodbye-card" aria-live="polite">
+        <img src="/images/coffee-mark.svg" alt="" width="88" height="88">
+        <h1 class="h2">Bye, See you Again</h1>
+        <p>You have logged out. Your membership is still active. Returning to Login in 3 seconds.</p>
+        <a href="/login" class="coffee-action coffee-action--neutral">Login now</a>
+    </section>
+</main>
+{{/loggedOut}}
+{{^loggedOut}}
+<main class="container py-5">
+    <section class="member-detail auth-card">
+        <div class="member-detail-heading">
+            <p class="text-muted mb-2">Membership</p>
+            <h1 class="h2">{{#registered}}Halo!{{/registered}}{{^registered}}Login{{/registered}}</h1>
+            <p class="text-muted mb-0">Log in to your coffee account.</p>
+        </div>
+        <form id="login-form" class="p-4" action="/login" method="post" autocomplete="off" data-clear-fields="{{clearCredentials}}">
+            {{>layouts/csrf}}
+            {{#membershipClosed}}<p class="alert alert-info" role="status">Your membership has ended. Your old login no longer works. Sign up again to become a member.</p>{{/membershipClosed}}
+            {{#idleTimeout}}<p class="alert alert-info" role="status">You were logged out after 30 minutes of inactivity. Your membership is still active.</p>{{/idleTimeout}}
+            {{#loginError}}<div class="alert alert-danger" role="alert">Unable to log in. Check your email and password.{{#verificationEnabled}} Verify your email first.{{/verificationEnabled}}</div>{{/loginError}}
+            {{#verified}}<div class="alert alert-success" role="status">Email verified. Log in with the password you chose at signup.</div>{{/verified}}
+            {{#loggedOut}}<div class="alert alert-success" role="status">You have been logged out.</div>{{/loggedOut}}
+            {{#registered}}<div class="alert alert-success" role="status">Account created. Log in below.</div>{{/registered}}
+            {{#updated}}<div class="alert alert-success" role="status">Password or account updated. Please log in again.</div>{{/updated}}
+            <label for="login-email" class="form-label">Email</label>
+            <input id="login-email" type="email" class="form-control mb-3" name="email" value=""
+                   autocomplete="off" required maxlength="254">
+            <label for="login-password" class="form-label">Password</label>
+            <input id="login-password" type="password" class="form-control mb-4" name="password" value=""
+                   autocomplete="off" required>
+            <button type="submit" class="coffee-action coffee-action--modify">Login</button>
+            <a href="/membership/signup" class="ms-3">Create an account</a>
+            <p class="form-text mt-3">Forgot your password? Ask the administrator for a password reset link.</p>
+        </form>
+    </section>
+</main>
+{{/loggedOut}}
+<script src="/js/coffee-login.js" defer></script>
+{{>layouts/footer}}
