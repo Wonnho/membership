@@ -1,0 +1,17 @@
+<div id="reviews-list">
+    {{#reviewDtos}}
+        <div class="card m-2" id="reviews-{{id}}">
+            <div class="card-header">
+                {{username}}
+            </div>
+
+            <div class="card-body">
+                {{review}}
+            </div>
+        </div>
+    {{/reviewDtos}}
+
+    {{^reviewDtos}}
+        <p>No reviews yet.</p>
+    {{/reviewDtos}}
+</div>

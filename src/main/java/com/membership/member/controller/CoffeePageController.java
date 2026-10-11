@@ -1,99 +1,38 @@
 package com.membership.member.controller;
 
+import com.membership.member.Service.CoffeeImageService;
 import com.membership.member.Service.CoffeeService;
-import com.membership.member.dto.CoffeeDto;
+import com.membership.member.Service.ReviewService;
 import com.membership.member.entity.Coffee;
-import com.membership.member.repository.CoffeeRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @Slf4j
-public class CoffeeApiController {
+public class CoffeePageController {
 
-    @Autowired
-    private com.membership.member.Service.CoffeeImageService coffeeImages;
+    private final CoffeeService coffeeService;
+    private final CoffeeImageService coffeeImages;
 
-    @Autowired
-    private CoffeeService coffeeService;
+    private final ReviewService reviewService;
 
-    @GetMapping("/api/coffee")
-    @ResponseBody
-    public ResponseEntity<List<Coffee>> retrieveCoffee() {
-        log.info("GET /api/coffee requested");
-
-        // retrieve all coffee data
-          List<Coffee>   coffees=coffeeService.retrieveAll();
-
-        log.info("Retrieved {} coffee records", coffees.size());
-        log.debug("Retrieved coffees: {}", coffees);
-
-        return ResponseEntity.status(HttpStatus.OK).body(coffees);
-    }
-
-    @GetMapping("/api/coffee/{id}")
-    @ResponseBody
-    public ResponseEntity<Coffee> retrieveCoffeeById(@PathVariable("id") Long id) {
-        log.info("GET /api/coffee/{} requested", id);
-
-        // retrieve a particular coffee
-        Optional<Coffee> coffee =coffeeService.retrieveCoffeeById(id);
-
-        return coffee
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-
-    }
-
-    @PostMapping("/api/coffee")
-    @ResponseBody
-    public ResponseEntity<Coffee> createCoffee(
-            @RequestBody Coffee coffee) {
-
-        log.info(
-                "Coffee creation requested: name={}, price={}",
-                coffee.getCoffee(),
-                coffee.getPrice()
-        );
-
-        Coffee savedCoffee = coffeeService.createCoffee(coffee);
-
-        log.info(
-                "Coffee created successfully: id={}, name={}",
-                savedCoffee.getId(),
-                savedCoffee.getCoffee()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(savedCoffee);
-    }
-
-    @PatchMapping("/api/coffee/{id}")
-    @ResponseBody
-    public Coffee patch(@PathVariable("id") Long id,@RequestBody CoffeeDto coffeeDto) {
-
-
-        return coffeeService.patchCoffee(id,coffeeDto);
-    }
-
-    @DeleteMapping("/api/coffee/{id}")
-    @ResponseBody
-    public void remove(@PathVariable("id") Long id) {
-
-
-        coffeeService.deleteCoffee(id);
+    public CoffeePageController(CoffeeService coffeeService, CoffeeImageService coffeeImages,
+                                ReviewService reviewService) {
+        this.coffeeService = coffeeService;
+        this.coffeeImages = coffeeImages;
+        this.reviewService=reviewService;
     }
 
     @GetMapping("/coffee")
@@ -110,7 +49,7 @@ public class CoffeeApiController {
     public String coffeeList(@RequestParam(name = "q", defaultValue = "") String query,
             @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
         List<Coffee> coffees = coffeeService.search(query);
-        coffees.sort(java.util.Comparator.comparing(Coffee::getId));
+        coffees.sort(Comparator.comparing(Coffee::getId));
         int pages = Math.max(1, (coffees.size() + 8) / 9);
         int current = Math.max(0, Math.min(page, pages - 1));
         model.addAttribute("coffees", coffees.subList(current * 9, Math.min(current * 9 + 9, coffees.size())));
@@ -118,7 +57,7 @@ public class CoffeeApiController {
         model.addAttribute("pageCount", pages);
         model.addAttribute("hasPrevious", current > 0);
         model.addAttribute("hasNext", current + 1 < pages);
-        String encoded = java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8);
+        String encoded = URLEncoder.encode(query, StandardCharsets.UTF_8);
         model.addAttribute("previousUrl", "/coffee/read?q=" + encoded + "&page=" + (current - 1));
         model.addAttribute("nextUrl", "/coffee/read?q=" + encoded + "&page=" + (current + 1));
         model.addAttribute("searchActive", !query.isBlank());
@@ -132,6 +71,7 @@ public class CoffeeApiController {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Coffee not found: " + id));
         model.addAttribute("coffee", coffee);
+        model.addAttribute("reviewDtos", reviewService.getReviews(id));
         return "coffeeboard/detail";
     }
 
@@ -185,23 +125,4 @@ public class CoffeeApiController {
         coffeeService.deleteCoffee(id);
         return "redirect:/coffee/read";
     }
-
-    @PostMapping("/coffeeboard/upload")
-    @ResponseBody
-    public java.util.Map<String, String> uploadCoffeeImage(
-            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
-        return java.util.Map.of("image", coffeeImages.upload(file));
-    }
-
-    @GetMapping("/coffee-images/{name}")
-    @ResponseBody
-    public ResponseEntity<org.springframework.core.io.Resource> coffeeImage(@PathVariable("name") String name) {
-        java.nio.file.Path path = coffeeImages.resolve(name);
-        return ResponseEntity.ok()
-                .header("X-Content-Type-Options", "nosniff")
-                .contentType(name.endsWith(".png") ? org.springframework.http.MediaType.IMAGE_PNG
-                        : org.springframework.http.MediaType.IMAGE_JPEG)
-                .body(new org.springframework.core.io.FileSystemResource(path));
-    }
-
 }

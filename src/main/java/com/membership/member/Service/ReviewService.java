@@ -8,6 +8,7 @@ import com.membership.member.repository.CoffeeRepository;
 import com.membership.member.repository.MemberRepository;
 import com.membership.member.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDto createReview(Long coffeeId, ReviewDto reviewDto) {
+    public ReviewDto createReview(Long coffeeId, String authorEmail,
+                                  ReviewDto reviewDto ) {
         // 1. find the coffee (throws if missing)
         Coffee coffee = coffeeRepository.findById(coffeeId)
                 .orElseThrow(() -> new IllegalArgumentException("No such a coffee in Menu"));

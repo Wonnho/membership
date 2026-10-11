@@ -2,8 +2,10 @@ package com.membership.member.api;
 
 import com.membership.member.Service.ReviewService;
 import com.membership.member.dto.ReviewDto;
+import com.membership.member.dto.ReviewForm;
 import com.membership.member.entity.Review;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +29,25 @@ public class ReviewApiController {
     //2.create review
     @PostMapping("/api/coffee/{coffeeId}/reviews")
     public ResponseEntity<ReviewDto> createReview(@PathVariable("coffeeId") Long coffeeId,
-                                  @RequestBody ReviewDto reviewDto) {
+                                  @RequestBody ReviewDto reviewDto,
+                                                  Authentication authentication) {
 
-       ReviewDto  created=reviewService.createReview(coffeeId,reviewDto);
-        return ResponseEntity.status(HttpStatus.OK).body(created);
+//       ReviewDto  created=reviewService.createReview(coffeeId,form);
+//        return ResponseEntity.status(HttpStatus.OK).body(created);
+
+        ReviewDto created = reviewService.createReview(
+                coffeeId,
+                authentication.getName(),
+                reviewDto
+
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(created);
 
     }
+
     //3. update review
     @PatchMapping("/api/coffee/{coffeeId}/reviews/{reviewId}")
     public ResponseEntity<ReviewDto> patchReview(@PathVariable("coffeeId") Long coffeeId,
