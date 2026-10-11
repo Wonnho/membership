@@ -4,6 +4,7 @@ package com.membership.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Setter
@@ -54,4 +55,12 @@ public class Review { // review on a coffee
 
         return review;
     }
+
+ public void patchReview(String reviewText) {
+        if (reviewText == null || reviewText.isBlank()) {
+            throw new IllegalArgumentException("Review text is required");
+        }
+        this.review=reviewText.trim();
+    }
+
 }

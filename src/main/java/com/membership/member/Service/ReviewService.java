@@ -9,6 +9,7 @@ import com.membership.member.repository.MemberRepository;
 import com.membership.member.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ReviewService {
         return reviewDtos;
     }
 
+    @Transactional
     public ReviewDto createReview(Long coffeeId, ReviewDto reviewDto) {
         // 1. find the coffee (throws if missing)
         Coffee coffee = coffeeRepository.findById(coffeeId)
@@ -60,7 +62,7 @@ public class ReviewService {
 
         // 2. find the member
         Member member = memberRepository.findById(reviewDto.getId()).orElseThrow(() ->
-                new IllegalArgumentException("No such a member" + +reviewDto.getId()));
+                new IllegalArgumentException("No such a member" + reviewDto.getId()));
 
         // 3. Create a new unsaved Review entity
         Review review=Review.create(
@@ -74,5 +76,41 @@ public class ReviewService {
 
 
         return reviewDto.ReviewDTO(saved);
+    }
+
+    @Transactional
+    public ReviewDto patchReview(Long coffeeId,Long reviewId, ReviewDto reviewDto) {
+        // 1. Find the existing review.
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Review not found: " + reviewId
+                        ));
+
+        // 2. Confirm that the review belongs to the URL's coffee.
+        if (!review.getCoffee().getId().equals(coffeeId)) {
+            throw new IllegalArgumentException(
+                    "Review " + reviewId
+                            + " does not belong to coffee " + coffeeId
+            );
+        }
+
+        // 3. Change only the review text.
+        review.patchReview(reviewDto.getReview());
+
+
+        // 4. Save the existing entity.
+        Review savedReview = reviewRepository.save(review);
+
+        // 5. Convert the result to a DTO.
+
+        return reviewDto.ReviewDTO(review);
+    }
+
+
+    @Transactional
+    public void deleteReview(Long reviewId) {
+    reviewRepository.deleteById(reviewId);
+
     }
 }

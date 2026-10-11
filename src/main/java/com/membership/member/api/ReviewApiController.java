@@ -3,6 +3,7 @@ package com.membership.member.api;
 import com.membership.member.Service.ReviewService;
 import com.membership.member.dto.ReviewDto;
 import com.membership.member.entity.Review;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class ReviewApiController {
 
     @Autowired
@@ -32,6 +34,20 @@ public class ReviewApiController {
 
     }
     //3. update review
-    // 4. dlete review
+    @PatchMapping("/api/coffee/{coffeeId}/reviews/{reviewId}")
+    public ResponseEntity<ReviewDto> patchReview(@PathVariable("coffeeId") Long coffeeId,
+                                                 @PathVariable("reviewId") Long reviewId,
+                                                 @RequestBody ReviewDto reviewDto) {
+        ReviewDto patched=reviewService.patchReview(coffeeId,reviewId,reviewDto);
+        return ResponseEntity.status(HttpStatus.OK).body(patched);
 
+    }
+    // 4. delete review
+    @DeleteMapping("/api/coffee/{coffeeId}/reviews/{reviewId}")
+    public void deleteReview(@PathVariable("reviewId") Long reviewId) {
+        reviewService.deleteReview(reviewId);
+        log.info("delete reviewId :" +reviewId);
+//        ReviewDto   deleted=reviewService.deleteReview(reviewId);
+    //      return ResponseEntity.status(HttpStatus.OK).body(deleted);
+    }
 }
