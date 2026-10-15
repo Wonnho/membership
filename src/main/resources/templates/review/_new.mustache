@@ -1,0 +1,35 @@
+<section class="card mt-4">
+    <div class="card-header">
+        Write a review
+    </div>
+
+    <div class="card-body">
+        {{#loggedIn}}
+            <form action="/coffee/read/{{coffee.id}}/reviews" method="post">
+                {{>layouts/csrf}}
+
+                <div class="mb-3">
+                    <label for="review-text" class="form-label">
+                        Your review
+                    </label>
+
+                    <textarea id="review-text"
+                              name="review"
+                              class="form-control"
+                              maxlength="255"
+                              required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Post review
+                </button>
+            </form>
+        {{/loggedIn}}
+
+        {{^loggedIn}}
+            <p class="mb-0">
+                <a href="/login">Log in</a> to write a review.
+            </p>
+        {{/loggedIn}}
+    </div>
+</section>
