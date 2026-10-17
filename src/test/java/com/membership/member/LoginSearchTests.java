@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = "coffee.email-verification.enabled=true")
+@WithTestAdmin
 @AutoConfigureMockMvc
 @Transactional
 class LoginSearchTests {
@@ -144,13 +145,13 @@ class LoginSearchTests {
 
     @Test
     void coffeeFormsStillRenderAndPublicApiStillWorks() throws Exception {
-        mvc.perform(get("/coffeeboard/register").with(user("admin@coffemaker.com").roles("ADMIN"))).andExpect(status().isOk())
+        mvc.perform(get("/coffeeboard/register").with(user(WithTestAdmin.EMAIL).roles("ADMIN"))).andExpect(status().isOk())
                 .andExpect(content().string(containsString("name=\"_csrf\"")));
-        mvc.perform(get("/coffeeboard/modify/1").with(user("admin@coffemaker.com").roles("ADMIN"))).andExpect(status().isOk());
-        mvc.perform(post("/api/coffee").with(user("admin@coffemaker.com").roles("ADMIN")).contentType("application/json")
+        mvc.perform(get("/coffeeboard/modify/1").with(user(WithTestAdmin.EMAIL).roles("ADMIN"))).andExpect(status().isOk());
+        mvc.perform(post("/api/coffee").with(user(WithTestAdmin.EMAIL).roles("ADMIN")).contentType("application/json")
                         .content("{\"coffee\":\"Test brew\",\"price\":1200}"))
                 .andExpect(status().isCreated());
-        mvc.perform(post("/coffeeboard/modify/1").with(user("admin@coffemaker.com").roles("ADMIN")).with(csrf()).param("coffee", "Americano")
+        mvc.perform(post("/coffeeboard/modify/1").with(user(WithTestAdmin.EMAIL).roles("ADMIN")).with(csrf()).param("coffee", "Americano")
                         .param("price", "4600").param("image", "/images/coffee/americano.jpg"))
                 .andExpect(redirectedUrl("/coffee/read"));
     }

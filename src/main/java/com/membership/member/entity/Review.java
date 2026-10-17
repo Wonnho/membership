@@ -23,7 +23,7 @@ public class Review { // review on a coffee
     @JoinColumn(name="member_id")
     private Member member;  //writer who comments a coffee
 
-    @Column
+    @Column(nullable = false, length = 255)
     private String review; // write a review about a coffee
 
 

@@ -28,23 +28,31 @@ public class ReviewApiController {
 
     //2.create review
     @PostMapping("/api/coffee/{coffeeId}/reviews")
-    public ResponseEntity<ReviewDto> createReview(@PathVariable("coffeeId") Long coffeeId,
-                                  @RequestBody ReviewDto reviewDto,
-                                                  Authentication authentication) {
+    public String createReview(
+            @PathVariable("coffeeId") Long coffeeId,
+            @ModelAttribute ReviewForm form,
+            Authentication authentication) {
 
 //       ReviewDto  created=reviewService.createReview(coffeeId,form);
 //        return ResponseEntity.status(HttpStatus.OK).body(created);
 
-        ReviewDto created = reviewService.createReview(
+//        ReviewDto created = reviewService.createReview(
+//               coffeeId,
+//                authentication.getName(),
+//        );
+
+        reviewService.createReview(
                 coffeeId,
                 authentication.getName(),
-                reviewDto
-
+                form
         );
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(created);
+
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(created);
+        return "redirect:/coffee/read/" + coffeeId + "#reviews";
+
 
     }
 

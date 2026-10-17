@@ -1,6 +1,6 @@
 package com.membership.member.controller;
 
-import com.membership.member.config.AdminAccount;
+import com.membership.member.config.AdminProperties;
 import com.membership.member.dto.MemberForm;
 import com.membership.member.entity.Member;
 import com.membership.member.repository.MemberRepository;
@@ -27,10 +27,13 @@ public class MemberController {
     private final PasswordEncoder passwords;
     private final com.membership.member.Service.EmailVerificationService verification;
     private final com.membership.member.Service.MembershipClosureService closure;
+    private final AdminProperties adminProperties;
     public MemberController(MemberRepository members, PasswordEncoder passwords,
             com.membership.member.Service.EmailVerificationService verification,
-            com.membership.member.Service.MembershipClosureService closure) {
+            com.membership.member.Service.MembershipClosureService closure,
+            AdminProperties adminProperties) {
         this.members=members; this.passwords=passwords; this.verification=verification; this.closure=closure;
+        this.adminProperties=adminProperties;
     }
     @GetMapping("/adios")
     public String adios(Model model) { model.addAttribute("amigos","Amigos"); return "front"; }
@@ -59,7 +62,7 @@ public class MemberController {
     public String joinMember(MemberForm form, Model model, RedirectAttributes redirect, HttpSession session) {
         String email=normalizeEmail(form.getEmail());
         String error=validate(email,form.getPassword(),false);
-        if(error==null && (AdminAccount.EMAIL.equals(email) || members.findByEmail(email).isPresent()))
+        if(error==null && (adminProperties.email().equals(email) || members.findByEmail(email).isPresent()))
             error="This email is already registered. Please log in.";
         if(error==null) {
             try {
@@ -104,9 +107,9 @@ public class MemberController {
         Member member=ownMember(id,auth);
         String email=normalizeEmail(form.getEmail());
         String error=validate(email,form.getPassword(),true);
-        if (member.getRole().equals("ADMIN") && !email.equals(AdminAccount.EMAIL))
+        if (member.getRole().equals("ADMIN") && !email.equals(adminProperties.email()))
             error="The administrator email is fixed.";
-        if (error==null && !member.getRole().equals("ADMIN") && AdminAccount.EMAIL.equals(email))
+        if (error==null && !member.getRole().equals("ADMIN") && adminProperties.email().equals(email))
             error="This email is reserved for the administrator.";
         if(error==null && members.findByEmail(email).filter(other -> !other.getId().equals(id)).isPresent())
             error="This email is already registered.";

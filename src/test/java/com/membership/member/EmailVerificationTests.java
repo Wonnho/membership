@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(properties = "coffee.email-verification.enabled=true")
+@WithTestAdmin
 @AutoConfigureMockMvc
 class EmailVerificationTests {
     @Autowired MockMvc mvc;
@@ -49,7 +50,8 @@ class EmailVerificationTests {
             .andExpect(content().string(containsString("value=\""+email+"\"")))
             .andExpect(content().string(not(containsString("alert alert-danger"))));
         mvc.perform(get("/login")).andExpect(content().string(not(containsString("Verify email / resend code"))));
-        mvc.perform(post("/login").with(csrf()).param("email","admin@coffemaker.com").param("password","coffeemakerAdmin"))
+        mvc.perform(post("/login").with(csrf()).param("email",WithTestAdmin.EMAIL)
+                .param("password",WithTestAdmin.PASSWORD))
             .andExpect(authenticated());
     }
 

@@ -17,7 +17,9 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest @AutoConfigureMockMvc
+@SpringBootTest
+@WithTestAdmin
+@AutoConfigureMockMvc
 class MembershipSessionTests {
     @Autowired MockMvc mvc;
     @Autowired MemberRepository members;
@@ -53,7 +55,7 @@ class MembershipSessionTests {
         mvc.perform(post("/account/withdraw").session(session).with(csrf()).param("confirmClosure","false"))
             .andExpect(status().isBadRequest());
         assertThat(members.findByEmail(email)).isPresent();
-        mvc.perform(post("/account/withdraw").with(user("admin@coffemaker.com").roles("ADMIN"))
+        mvc.perform(post("/account/withdraw").with(user(WithTestAdmin.EMAIL).roles("ADMIN"))
                 .with(csrf()).param("confirmClosure","true")).andExpect(status().isForbidden());
     }
     @Test void normalLogoutPreservesMembership() throws Exception {

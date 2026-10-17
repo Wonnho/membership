@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@WithTestAdmin
 @AutoConfigureMockMvc
 class VerificationPausedTests {
     @Autowired MockMvc mvc;

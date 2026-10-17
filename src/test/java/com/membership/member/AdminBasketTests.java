@@ -1,6 +1,5 @@
 package com.membership.member;
 
-import com.membership.member.config.AdminAccount;
 import com.membership.member.Service.PasswordResetService;
 import com.membership.member.entity.*;
 import com.membership.member.repository.*;
@@ -21,6 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@WithTestAdmin
 @AutoConfigureMockMvc
 @Transactional
 class AdminBasketTests {
@@ -40,12 +40,12 @@ class AdminBasketTests {
     }
 
     @Test void seededAdministratorCanLogIn() throws Exception {
-        mvc.perform(post("/login").with(csrf()).param("email",AdminAccount.EMAIL)
-                .param("password","coffeemakerAdmin"))
+        mvc.perform(post("/login").with(csrf()).param("email",WithTestAdmin.EMAIL)
+                .param("password",WithTestAdmin.PASSWORD))
             .andExpect(redirectedUrl("/coffee")).andExpect(authenticated().withRoles("ADMIN"));
-        mvc.perform(get("/members").with(user(AdminAccount.EMAIL).roles("ADMIN")))
+        mvc.perform(get("/members").with(user(WithTestAdmin.EMAIL).roles("ADMIN")))
             .andExpect(status().isOk()).andExpect(content().string(containsString("Administrator access")));
-        mvc.perform(post("/join").with(csrf()).param("email",AdminAccount.EMAIL)
+        mvc.perform(post("/join").with(csrf()).param("email",WithTestAdmin.EMAIL)
                 .param("password","test-password"))
             .andExpect(content().string(containsString("already registered")));
     }
@@ -67,14 +67,14 @@ class AdminBasketTests {
             .andExpect(content().string(containsString("Sign out")))
             .andExpect(content().string(containsString("Permanently quit membership")))
             .andExpect(content().string(not(containsString("/members/delete/"))));
-        mvc.perform(get("/members/"+guest.getId()).with(user(AdminAccount.EMAIL).roles("ADMIN")))
+        mvc.perform(get("/members/"+guest.getId()).with(user(WithTestAdmin.EMAIL).roles("ADMIN")))
             .andExpect(status().isOk()).andExpect(content().string(containsString("Member List")))
             .andExpect(content().string(containsString("Create password reset link")))
             .andExpect(content().string(not(containsString(guest.getPassword()))));
         mvc.perform(get("/coffee/read").with(user(guest.getEmail())))
             .andExpect(status().isOk()).andExpect(content().string(containsString("Add to basket")))
             .andExpect(content().string(not(containsString("/coffeeboard/modify/"))));
-        mvc.perform(get("/coffee/read").with(user(AdminAccount.EMAIL).roles("ADMIN")))
+        mvc.perform(get("/coffee/read").with(user(WithTestAdmin.EMAIL).roles("ADMIN")))
             .andExpect(content().string(containsString("/coffeeboard/modify/")));
     }
 
@@ -102,7 +102,7 @@ class AdminBasketTests {
         mvc.perform(get("/login?logout"))
             .andExpect(content().string(containsString("Bye, See you Again")))
             .andExpect(content().string(not(containsString("id=\"login-form\""))))
-            .andExpect(content().string(not(containsString("coffeemakerAdmin"))))
+            .andExpect(content().string(not(containsString(WithTestAdmin.PASSWORD))))
             .andExpect(content().string(not(containsString("Welcome Back"))));
     }
 
@@ -184,7 +184,7 @@ class AdminBasketTests {
     @Test void resetLinkIsAdminOnlySingleUseAndNewPasswordWorks() throws Exception {
         Member target=member("reset@coffee.com");
         String path=(String)mvc.perform(post("/members/"+target.getId()+"/reset")
-                .with(user(AdminAccount.EMAIL).roles("ADMIN")).with(csrf()))
+                .with(user(WithTestAdmin.EMAIL).roles("ADMIN")).with(csrf()))
             .andExpect(status().isOk()).andReturn().getModelAndView().getModel().get("resetPath");
         String token=path.substring(path.indexOf('=')+1);
         assertThat(target.getResetTokenHash()).isNotEqualTo(token);
@@ -210,5 +210,18 @@ class AdminBasketTests {
         target.issueReset(target.getResetTokenHash(),Instant.now().minusSeconds(1));
         assertThat(resets.valid(current)).isFalse();
         assertThatThrownBy(() -> resets.reset(current,"new-password")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test void creatingAReviewRequiresLoginAndCsrf() throws Exception {
+        mvc.perform(post("/coffee/read/1/reviews")
+                        .with(csrf())
+                        .param("body", "Balanced"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+
+        mvc.perform(post("/coffee/read/1/reviews")
+                        .with(user("member@example.com").roles("MEMBER"))
+                        .param("body", "Balanced"))
+                .andExpect(status().isForbidden());
     }
 }

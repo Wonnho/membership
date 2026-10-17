@@ -3,20 +3,23 @@ package com.membership.member.config;
 import com.membership.member.entity.Member;
 import com.membership.member.repository.MemberRepository;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@EnableConfigurationProperties(AdminProperties.class)
 public class AdminAccount {
-    public static final String EMAIL = "admin@coffemaker.com";
-
     @Bean
-    ApplicationRunner createAdmin(MemberRepository members, PasswordEncoder passwords,
-            @Value("${coffee.admin-password:coffeemakerAdmin}") String password) {
+    ApplicationRunner createAdmin(
+            MemberRepository members,
+            PasswordEncoder passwords,
+            AdminProperties adminProperties) {
         return args -> {
-            if (members.findByEmail(EMAIL).isEmpty()) {
-                Member admin = new Member(EMAIL, passwords.encode(password));
+            String email = adminProperties.email();
+            if (members.findByEmail(email).isEmpty()) {
+                Member admin = new Member(email, passwords.encode(adminProperties.password()));
                 admin.makeAdmin();
                 members.save(admin);
             }

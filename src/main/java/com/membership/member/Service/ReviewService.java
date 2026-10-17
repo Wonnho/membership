@@ -1,6 +1,7 @@
 package com.membership.member.Service;
 
 import com.membership.member.dto.ReviewDto;
+import com.membership.member.dto.ReviewForm;
 import com.membership.member.entity.Coffee;
 import com.membership.member.entity.Member;
 import com.membership.member.entity.Review;
@@ -8,9 +9,11 @@ import com.membership.member.repository.CoffeeRepository;
 import com.membership.member.repository.MemberRepository;
 import com.membership.member.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,28 +59,52 @@ public class ReviewService {
 
     @Transactional
     public ReviewDto createReview(Long coffeeId, String authorEmail,
-                                  ReviewDto reviewDto ) {
+                                  ReviewForm form ) {
+
+        String text = form.getReview();
+
+        if (text == null
+                || text.isBlank()
+                || text.trim().length() > 255) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Review must contain between 1 and 255 characters."
+            );
+        }
+
         // 1. find the coffee (throws if missing)
+//        Coffee coffee = coffeeRepository.findById(coffeeId)
+//                .orElseThrow(() -> new IllegalArgumentException("No such a coffee in Menu"));
+
         Coffee coffee = coffeeRepository.findById(coffeeId)
-                .orElseThrow(() -> new IllegalArgumentException("No such a coffee in Menu"));
-
-
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Coffee not found: " + coffeeId
+                ));
         // 2. find the member
-        Member member = memberRepository.findById(reviewDto.getId()).orElseThrow(() ->
-                new IllegalArgumentException("No such a member" + reviewDto.getId()));
+//        Member member = memberRepository.findById(reviewDto.getId()).orElseThrow(() ->
+//                new IllegalArgumentException("No such a member" + reviewDto.getId()));
+
+        Member member = memberRepository.findByEmail(authorEmail)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Authenticated member was not found."
+                ));
 
         // 3. Create a new unsaved Review entity
         Review review=Review.create(
                 coffee,
                 member,
-                reviewDto.getReview()
+//                reviewDto.getReview()
+                text.trim()
         );
 
         // 4. Insert it into the database.
       Review  saved=reviewRepository.save(review);
 
 
-        return reviewDto.ReviewDTO(saved);
+//        return reviewDto.ReviewDTO(saved);
+        return ReviewDto.ReviewDTO(saved);
+
     }
 
     @Transactional
